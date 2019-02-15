@@ -19,6 +19,7 @@ typedef void(^PoporFFmpegFinishBlock)(BOOL finished, NSString * info); // __Bloc
 
 - (void)compressCmd:(NSString *)cmd finish:(PoporFFmpegFinishBlock)finishBlock;
 
+// 只支持本地URL
 - (void)compressVideoUrl:(NSString *)url size:(CGSize)tSize tPath:(NSString *)tPath finish:(PoporFFmpegFinishBlock)finishBlock;
 
 

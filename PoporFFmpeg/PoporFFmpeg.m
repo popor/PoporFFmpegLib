@@ -85,12 +85,28 @@ static NSString * ThreadCompressName = @"PoporFFmpegVideo";
     if([tracks count] > 0) {
         AVAssetTrack *videoTrack = [tracks objectAtIndex:0];
         CGAffineTransform t = videoTrack.preferredTransform;//这里的矩阵有旋转角度，转换一下即可
-        NSLog(@"=====hello  width:%f===height:%f",videoTrack.naturalSize.width,videoTrack.naturalSize.height);
-        if (t.tx==0) {
+        //NSLog(@"=====video size  width:%f===height:%f",videoTrack.naturalSize.width,videoTrack.naturalSize.height);
+        
+        BOOL upDown = YES;
+        if(t.a == 0 && t.b == 1.0 && t.c == -1.0 && t.d == 0){
+            // Portrait
+            upDown = YES;
+        }else if(t.a == 0 && t.b == -1.0 && t.c == 1.0 && t.d == 0){
+            // PortraitUpsideDown
+            upDown = YES;
+        }else if(t.a == 1.0 && t.b == 0 && t.c == 0 && t.d == 1.0){
+            // LandscapeRight
+            upDown = NO;
+        }else if(t.a == -1.0 && t.b == 0 && t.c == 0 && t.d == -1.0){
+            // LandscapeLeft
+            upDown = NO;
+        }
+        if (!upDown) {
             return CGSizeMake(videoTrack.naturalSize.width, videoTrack.naturalSize.height);
         }else{
             return CGSizeMake(videoTrack.naturalSize.height, videoTrack.naturalSize.width);
         }
+        
     }else{
         return CGSizeZero;
     }
@@ -108,6 +124,7 @@ static NSString * ThreadCompressName = @"PoporFFmpegVideo";
     return self;
 }
 
+// 只支持本地URL
 - (void)compressVideoUrl:(NSString *)url size:(CGSize)tSize tPath:(NSString *)tPath finish:(PoporFFmpegFinishBlock)finishBlock {
     if (!url) {
         finishBlock(NO, @"FFMpegCmd url error");
